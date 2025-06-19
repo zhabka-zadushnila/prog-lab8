@@ -43,7 +43,7 @@ public class ConnectionManager {
                 buffer.flip();
                 byte serverByte = buffer.get();
                 if (serverByte == 0x43) {
-                    System.out.println("Соединение установлено");
+                    //System.out.println("Соединение установлено");
                     return channel;
                 }
 

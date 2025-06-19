@@ -34,7 +34,7 @@ public class LocaleManager {
             resources.set(ResourceBundle.getBundle(BUNDLE_PATH, locale));
         } catch (Exception e) {
             resources.set(ResourceBundle.getBundle(BUNDLE_PATH, Locale.ROOT));
-            System.err.println("Could not find resource bundle for locale " + locale + ", using default.");
+            System.out.println("Could not find resource bundle for locale " + locale + ", using default.");
         }
     }
 

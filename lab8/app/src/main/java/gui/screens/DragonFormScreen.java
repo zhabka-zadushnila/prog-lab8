@@ -300,10 +300,10 @@ public class DragonFormScreen {
             return true;
 
         } catch (NumberFormatException nfe) {
-            showAlert(localeManager.getString("form.error.title"), localeManager.getString("form.error.number"));
+            showAlert("form.error.title", localeManager.getString("form.error.number"));
             return false;
         } catch (IllegalArgumentException iae) {
-            showAlert(localeManager.getString("form.error.title"), iae.getMessage());
+            showAlert("form.error.title", iae.getMessage());
             return false;
         }
     }

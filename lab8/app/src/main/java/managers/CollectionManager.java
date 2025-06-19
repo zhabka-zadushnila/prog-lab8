@@ -23,7 +23,7 @@ public class CollectionManager {
     static int RECONNECT_TIMEOUT = 2000; //millis
     String hostname = "188.242.233.237";
     int port = 52947;
-    SocketChannel channel = ConnectionManager.connectToServer(hostname, port, MAX_RECONNECT_ATTEMPTS, RECONNECT_TIMEOUT);
+
 
 
 
@@ -130,6 +130,7 @@ public class CollectionManager {
     }
 
     public void sync(){
+        SocketChannel channel = ConnectionManager.connectToServer(hostname, port, MAX_RECONNECT_ATTEMPTS, RECONNECT_TIMEOUT);
         Packet packet = RequestConstructor.createRequest();
         try {
             RequestResponseTool.sendPacket(channel, packet);
