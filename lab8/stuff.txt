@@ -1,0 +1,46 @@
+# ?????
+app.title=\u041F\u0440\u043E\u0441\u043C\u043E\u0442\u0440 \u043A\u043E\u043B\u043B\u0435\u043A\u0446\u0438\u0438
+filter.label=Фильтр:
+filter.prompt=Пиши...
+button.refresh=Перезагрузить
+user.unregistered=Гость
+button.registerLogin=Вход / Регистрация
+
+# ?????? ??????
+command.info=Инфа
+command.show=Шоу
+command.insert=Вставить
+command.update=Обновить
+command.remove_key=Удалить по ключу
+command.remove_greater=Убить величайших
+command.replace_if_lower=Заменить если больше
+
+# ??????? ???????
+column.key=Ключ
+column.owner=Хозяин
+column.name=Имя
+column.x=X
+column.y=Y
+column.creationDate=Дата
+column.age=Возраст
+column.color=Цвет
+column.type=Тип
+column.character=Масть
+column.depth=Глубина норы
+column.treasures=Сберкнижка
+
+# ??????????
+alert.info.title=Инфа о коллекции
+alert.info.content=Тип: %s\nДата инициализации: %s\nКоличество элементов: %d
+alert.error.title=ашИпка
+alert.error.notOwner=Сорян, но можно изменять тока своих драконов
+alert.warning.title=Забанен
+alert.warning.notLoggedIn=Сначала залогинься, потом тыкай на кнопки
+alert.result.title=Результат операции
+
+# ????? ????????/??????????
+form.title.create=??????? ?????? ???????
+form.title.update=???????? ???????: %s
+form.label.name=???:
+form.label.key=????:
+# ... ? ??? ????? ??? ???? ????? ?????

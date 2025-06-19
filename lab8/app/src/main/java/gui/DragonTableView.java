@@ -102,7 +102,8 @@ public class DragonTableView extends Application {
         );
 
 
-        Label title = new Label("Область визуализации");
+        Label title = new Label();
+        title.textProperty().bind(localeManager.createStringBinding("graphics.visualisation"));
         title.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
 
         VBox rightBox = new VBox(5);
@@ -153,7 +154,9 @@ public class DragonTableView extends Application {
     }
 
     private void startLogin() {
-        this.user = (new LoginScreen()).start();
+        User newUser = (new LoginScreen()).start();
+        if(this.user!= null && newUser==null ){return;}
+        this.user=newUser;
     }
 
     private void updateVisualPane(Stage primaryStage) {
@@ -166,7 +169,10 @@ public class DragonTableView extends Application {
     }
 
     private void updateDragon(Dragon dragon, String key){
-
+        if (user == null){
+            showAlert(Alert.AlertType.WARNING, "alert.warning.title", localeManager.getString("alert.warning.notLoggedIn"));
+            return;
+        }
         DragonDisplayWrapper selectedForUpdate = new DragonDisplayWrapper(key, dragon);
         if (dragon.getOwnerLogin().equals(user.getLogin())) {
             DragonFormScreen updateDialog = new DragonFormScreen();
@@ -176,13 +182,13 @@ public class DragonTableView extends Application {
                 newDragon.setOwnerLogin(user.getLogin());
                 collectionManager.replaceElement(selectedForUpdate.getKey(), newDragon);
                 String response = commandsManager.updateDragon(new DragonDisplayWrapper(selectedForUpdate.getKey(), newDragon), user);
-                showAlert(Alert.AlertType.INFORMATION, "Execution result", response);
+                showAlert(Alert.AlertType.INFORMATION, "alert.result.title", response);
                 collectionManager.sync();
                 loadDataFromCollectionManager();
             }
         
         } else {
-            showAlert(Alert.AlertType.ERROR, "Bruh", "Sorry, but you can not modify someones dragon");
+            showAlert(Alert.AlertType.ERROR, "alert.error.title", localeManager.getString("alert.error.notOwner"));
         }
     }
     private BorderPane createTopPanel() {
@@ -337,7 +343,8 @@ private void attachInfoHandler(Node node, Dragon dragon, Stage primaryStage, Str
     node.setOnMouseClicked(event -> {
         Stage dialog = new Stage();
         dialog.initOwner(primaryStage);
-        dialog.setTitle("Информация о драконе");
+        dialog.setTitle(localeManager.getString("attached.title"));
+
 
         VBox vbox = new VBox(10);
         vbox.setPadding(new Insets(15));
@@ -346,30 +353,30 @@ private void attachInfoHandler(Node node, Dragon dragon, Stage primaryStage, Str
         header.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
 
         StringBuilder content = new StringBuilder();
-        content.append("Имя: ").append(dragon.getName()).append("\n")
-               .append("Координаты: (")
+        content.append(localeManager.getString("attached.name")+" ").append(dragon.getName()).append("\n")
+               .append(localeManager.getString("attached.coords")+" (")
                .append(dragon.getCoordinates().getX()).append(", ")
                .append(dragon.getCoordinates().getY()).append(")\n")
-               .append("Возраст: ").append(dragon.getAge()).append("\n")
-               .append("Тип: ").append(dragon.getType()).append("\n")
-               .append("Характер: ").append(dragon.getCharacter());
+               .append(localeManager.getString("attached.age")+" ").append(dragon.getAge()).append("\n")
+               .append(localeManager.getString("attached.type")+" ").append(dragon.getType()).append("\n")
+               .append(localeManager.getString("attached.character")+" ").append(dragon.getCharacter());
         if (dragon.getCave() != null) {
-            content.append("\nПещера: ")
+            content.append("\n"+localeManager.getString("attached.cave")+" ")
                    .append(dragon.getCave().getNumberOfTreasures())
-                   .append(" сокровищ");
+                   .append(" "+ localeManager.getString("attached.treasures"));
         }
 
         TextArea infoArea = new TextArea(content.toString());
         infoArea.setEditable(false);
         infoArea.setWrapText(true);
 
-        Button updateButton = new Button("Обновить");
+        Button updateButton = new Button(localeManager.getString("attached.update"));
         updateButton.setOnAction(e -> {
             updateDragon(dragon, key);
             dialog.close();
         });
 
-        Button closeButton = new Button("Закрыть");
+        Button closeButton = new Button(localeManager.getString("attached.close"));
         closeButton.setOnAction(e -> dialog.close());
 
         HBox buttons = new HBox(10, updateButton, closeButton);
@@ -397,6 +404,18 @@ private void attachInfoHandler(Node node, Dragon dragon, Stage primaryStage, Str
 
         TableColumn<DragonDisplayWrapper, Double> xCol = new TableColumn<>("X");
         xCol.setCellValueFactory(new PropertyValueFactory<>("x"));
+        xCol.setCellFactory(
+                column -> new TableCell<DragonDisplayWrapper, Double>(){
+            @Override
+            protected void updateItem(Double item, boolean empty){
+                super.updateItem(item, empty);
+                if(empty || item == null){
+                    setText(null);
+                } else {
+                    setText(localeManager.formatNumber(item));
+                }
+            }
+        });
 
         TableColumn<DragonDisplayWrapper, Long> yCol = new TableColumn<>("Y");
         yCol.setCellValueFactory(new PropertyValueFactory<>("y"));
@@ -404,6 +423,18 @@ private void attachInfoHandler(Node node, Dragon dragon, Stage primaryStage, Str
         TableColumn<DragonDisplayWrapper, LocalDate> dateCol = new TableColumn<>();
         dateCol.textProperty().bind(localeManager.createStringBinding("column.creationDate"));
         dateCol.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
+        dateCol.setCellFactory(
+                column -> new TableCell<DragonDisplayWrapper, LocalDate>(){
+                    @Override
+                    protected void updateItem(LocalDate item, boolean empty){
+                        super.updateItem(item, empty);
+                        if(empty || item == null){
+                            setText(null);
+                        } else {
+                            setText(localeManager.formatDate(item));
+                        }
+                    }
+                });
 
         TableColumn<DragonDisplayWrapper, Integer> ageCol = new TableColumn<>();
         ageCol.textProperty().bind(localeManager.createStringBinding("column.age"));
@@ -413,17 +444,33 @@ private void attachInfoHandler(Node node, Dragon dragon, Stage primaryStage, Str
         colorCol.textProperty().bind(localeManager.createStringBinding("column.color"));
         colorCol.setCellValueFactory(new PropertyValueFactory<>("color"));
 
-        TableColumn<DragonDisplayWrapper, String> typeCol = new TableColumn<>("Type");
+        TableColumn<DragonDisplayWrapper, String> typeCol = new TableColumn<>();
+        typeCol.textProperty().bind(localeManager.createStringBinding("column.type"));
         typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
 
-        TableColumn<DragonDisplayWrapper, String> charCol = new TableColumn<>("Character");
+        TableColumn<DragonDisplayWrapper, String> charCol = new TableColumn<>();
+        charCol.textProperty().bind(localeManager.createStringBinding("column.character"));
         charCol.setCellValueFactory(new PropertyValueFactory<>("character"));
 
-        TableColumn<DragonDisplayWrapper, Integer> depthCol = new TableColumn<>("Cave Depth");
+        TableColumn<DragonDisplayWrapper, Integer> depthCol = new TableColumn<>();
+        depthCol.textProperty().bind(localeManager.createStringBinding("column.depth"));
         depthCol.setCellValueFactory(new PropertyValueFactory<>("depth"));
 
-        TableColumn<DragonDisplayWrapper, Double> treasuresCol = new TableColumn<>("Treasures");
+        TableColumn<DragonDisplayWrapper, Double> treasuresCol = new TableColumn<>();
+        treasuresCol.textProperty().bind(localeManager.createStringBinding("column.treasures"));
         treasuresCol.setCellValueFactory(new PropertyValueFactory<>("treasures"));
+        treasuresCol.setCellFactory(
+                column -> new TableCell<DragonDisplayWrapper, Double>(){
+                    @Override
+                    protected void updateItem(Double item, boolean empty){
+                        super.updateItem(item, empty);
+                        if(empty || item == null){
+                            setText(null);
+                        } else {
+                            setText(localeManager.formatNumber(item));
+                        }
+                    }
+                });
 
         table.getColumns().addAll(keyCol, ownerCol, nameCol, xCol, yCol, dateCol, ageCol, colorCol, typeCol, charCol, depthCol, treasuresCol);
 
@@ -459,7 +506,8 @@ private void attachInfoHandler(Node node, Dragon dragon, Stage primaryStage, Str
         String[] commandNames = {"info", "show", "insert", "update", "remove_key", "remove_greater", "replace_if_lower"};
 
         for (String commandName : commandNames) {
-            Button btn = new Button(commandName.replace('_', ' '));
+            Button btn = new Button();
+            btn.textProperty().bind(localeManager.createStringBinding("command."+commandName));
             btn.setOnAction(e -> handleCommand(commandName));
             bottomPanel.getChildren().add(btn);
         }
@@ -469,23 +517,31 @@ private void attachInfoHandler(Node node, Dragon dragon, Stage primaryStage, Str
 
     private void handleCommand(String commandName) {
 
-        System.out.println("Executing command: " + commandName);
+        //System.out.println("Executing command: " + commandName);
 
         switch (commandName) {
 
             case "insert":
+                if (user == null){
+                    showAlert(Alert.AlertType.WARNING, "alert.warning.title", localeManager.getString("alert.warning.notLoggedIn"));
+                    break;
+                }
                 DragonFormScreen insertDialog = new DragonFormScreen();
                 DragonDisplayWrapper newEntry = insertDialog.getNewDragon();
                 if (newEntry != null) {
                     newEntry.getValue().setOwnerLogin(user.getLogin());
                     String response = commandsManager.insertDragon(newEntry, user);
-                    showAlert(Alert.AlertType.INFORMATION, "Execution result", response);
+                    showAlert(Alert.AlertType.INFORMATION, "alert.result.title", response);
                     collectionManager.sync();
                     loadDataFromCollectionManager();
                 }
                 break;
 
             case "update":
+                if (user == null){
+                    showAlert(Alert.AlertType.WARNING, "alert.warning.title", localeManager.getString("alert.warning.notLoggedIn"));
+                    break;
+                }
                 DragonDisplayWrapper selectedForUpdate = table.getSelectionModel().getSelectedItem();
                 if(selectedForUpdate != null){
                     if (selectedForUpdate.getOwner().equals(user.getLogin())) {
@@ -495,18 +551,22 @@ private void attachInfoHandler(Node node, Dragon dragon, Stage primaryStage, Str
                         if (newDragon != null) {
                             collectionManager.replaceElement(selectedForUpdate.getKey(), newDragon);
                             String response = commandsManager.updateDragon(new DragonDisplayWrapper(selectedForUpdate.getKey(), newDragon), user);
-                            showAlert(Alert.AlertType.INFORMATION, "Execution result", response);
+                            showAlert(Alert.AlertType.INFORMATION, "alert.result.title", response);
                             collectionManager.sync();
                             loadDataFromCollectionManager();
                         }
                     } else {
-                        showAlert(Alert.AlertType.ERROR, "Bruh", "Sorry, but you can not modify someones dragon");
+                        showAlert(Alert.AlertType.ERROR, "alert.error.title", localeManager.getString("alert.error.notOwner"));
                     }
 
                 }
                 break;
 
             case "replace_if_lower":
+                if (user == null){
+                    showAlert(Alert.AlertType.WARNING, "alert.warning.title", localeManager.getString("alert.warning.notLoggedIn"));
+                    break;
+                }
                 DragonDisplayWrapper selectedForReplace = table.getSelectionModel().getSelectedItem();
                 if(selectedForReplace != null){
                     if (selectedForReplace.getOwner().equals(user.getLogin())) {
@@ -516,44 +576,52 @@ private void attachInfoHandler(Node node, Dragon dragon, Stage primaryStage, Str
                         if (newDragon != null) {
                             collectionManager.replaceElement(selectedForReplace.getKey(), newDragon);
                             String response = commandsManager.replaceIfLowerDragon(new DragonDisplayWrapper(selectedForReplace.getKey(), newDragon), user);
-                            showAlert(Alert.AlertType.INFORMATION, "Execution result", response);
+                            showAlert(Alert.AlertType.INFORMATION, "alert.result.title", response);
                             collectionManager.sync();
                             loadDataFromCollectionManager();
                         }
                     } else {
-                        showAlert(Alert.AlertType.ERROR, "Bruh", "Sorry, but you can not modify someones dragon");
+                        showAlert(Alert.AlertType.ERROR, "alert.error.title", localeManager.getString("alert.error.notOwner"));
                     }
 
                 }
                 break;
 
             case "remove_key":
+                if (user == null){
+                    showAlert(Alert.AlertType.WARNING, "alert.warning.title", localeManager.getString("alert.warning.notLoggedIn"));
+                    break;
+                }
                 DragonDisplayWrapper selectedForRemove = table.getSelectionModel().getSelectedItem();
                 if(selectedForRemove != null){
                     if (selectedForRemove.getOwner().equals(user.getLogin())) {
                         String response = commandsManager.removeKeyDragon(new String[]{selectedForRemove.getKey()}, user);
-                        showAlert(Alert.AlertType.INFORMATION, "Execution result", response);
+                        showAlert(Alert.AlertType.INFORMATION, "alert.result.title", response);
                         collectionManager.sync();
                         loadDataFromCollectionManager();
 
                     } else {
-                        showAlert(Alert.AlertType.ERROR, "Bruh", "Sorry, but you can not modify someones dragon");
+                        showAlert(Alert.AlertType.ERROR, "alert.error.title", localeManager.getString("alert.error.notOwner"));
                     }
 
                 }
                 break;
 
             case "remove_greater":
+                if (user == null){
+                    showAlert(Alert.AlertType.WARNING, "alert.warning.title", localeManager.getString("alert.warning.notLoggedIn"));
+                    break;
+                }
                 DragonDisplayWrapper selectedForRemoveGr = table.getSelectionModel().getSelectedItem();
                 if(selectedForRemoveGr != null){
                     if (selectedForRemoveGr.getOwner().equals(user.getLogin())) {
                         String response = commandsManager.removeKeyGrDragon(new String[]{selectedForRemoveGr.getKey()}, user);
-                        showAlert(Alert.AlertType.INFORMATION, "Execution result", response);
+                        showAlert(Alert.AlertType.INFORMATION, "alert.result.title", response);
                         collectionManager.sync();
                         loadDataFromCollectionManager();
 
                     } else {
-                        showAlert(Alert.AlertType.ERROR, "Bruh", "Sorry, but you can not modify someones dragon");
+                        showAlert(Alert.AlertType.ERROR, "alert.error.title", localeManager.getString("alert.error.notOwner"));
                     }
 
                 }
@@ -563,10 +631,9 @@ private void attachInfoHandler(Node node, Dragon dragon, Stage primaryStage, Str
                 collectionManager.sync();
                 loadDataFromCollectionManager();
                 Map<String, Object> info = collectionManager.getCollectionInfoMap();
-                showAlert(Alert.AlertType.INFORMATION, "Collection Info",
-                        "Type: " + info.get("Type") + "\n" +
-                                "Initialization Date: " + info.get("Date") + "\n" +
-                                "Number of elements: " + info.get("ElementsQuantity"));
+                showAlert(Alert.AlertType.INFORMATION, "alert.info.title",
+                        String.format(localeManager.getString("alert.info.content"),
+                                info.get("Type"), info.get("Date"), info.get("ElementsQuantity")));
                 break;
 
             case "show":
@@ -589,7 +656,7 @@ private void attachInfoHandler(Node node, Dragon dragon, Stage primaryStage, Str
 
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
-        alert.setTitle(title);
+        alert.titleProperty().bind(localeManager.createStringBinding(title));
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();

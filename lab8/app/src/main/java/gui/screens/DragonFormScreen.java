@@ -1,5 +1,6 @@
 package gui.screens;
 
+import gui.managers.LocaleManager;
 import structs.wrappers.DragonDisplayWrapper;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -14,19 +15,19 @@ import structs.classes.*;
 import java.util.Map;
 
 public class DragonFormScreen {
-
+    private final LocaleManager localeManager = LocaleManager.getInstance();
     private Dragon resultDragon = null;
     private DragonDisplayWrapper resultEntry = null;
 
     public DragonDisplayWrapper getNewDragon() {
         this.resultEntry = null;
-        showEntryForm("Create New Dragon");
+        showEntryForm(localeManager.getString("form.title.create"));
         return this.resultEntry;
     }
 
     public Dragon updateDragon(DragonDisplayWrapper dragonWrapper) {
         this.resultDragon = null;
-        showDragonForm("Update Dragon: " + dragonWrapper.getKey(), dragonWrapper.getOriginalDragon());
+        showDragonForm(localeManager.getString("form.title.update")+" " + dragonWrapper.getKey(), dragonWrapper.getOriginalDragon());
         return this.resultDragon;
     }
 
@@ -50,7 +51,6 @@ public class DragonFormScreen {
         typeBox.getItems().setAll(DragonType.values());
         ComboBox<DragonCharacter> characterBox = new ComboBox<>();
         characterBox.getItems().setAll(DragonCharacter.values());
-        characterBox.setPromptText("Select a character (optional)");
 
         CheckBox hasCaveCheck = new CheckBox();
         TextField depthField = new TextField();
@@ -59,25 +59,25 @@ public class DragonFormScreen {
         depthField.disableProperty().bind(hasCaveCheck.selectedProperty().not());
         treasuresField.disableProperty().bind(hasCaveCheck.selectedProperty().not());
 
-        grid.add(new Label("Name:"), 0, 0);
+        grid.add(new Label(localeManager.getString("form.label.name")), 0, 0);
         grid.add(nameField, 1, 0);
-        grid.add(new Label("Coordinate X:"), 0, 1);
+        grid.add(new Label(localeManager.getString("form.label.cordX")), 0, 1);
         grid.add(xField, 1, 1);
-        grid.add(new Label("Coordinate Y:"), 0, 2);
+        grid.add(new Label(localeManager.getString("form.label.cordY")), 0, 2);
         grid.add(yField, 1, 2);
-        grid.add(new Label("Age:"), 0, 3);
+        grid.add(new Label(localeManager.getString("form.label.age")), 0, 3);
         grid.add(ageField, 1, 3);
-        grid.add(new Label("Color:"), 0, 4);
+        grid.add(new Label(localeManager.getString("form.label.color")), 0, 4);
         grid.add(colorBox, 1, 4);
-        grid.add(new Label("Type:"), 0, 5);
+        grid.add(new Label(localeManager.getString("form.label.type")), 0, 5);
         grid.add(typeBox, 1, 5);
-        grid.add(new Label("Character:"), 0, 6);
+        grid.add(new Label(localeManager.getString("form.label.character")), 0, 6);
         grid.add(characterBox, 1, 6);
-        grid.add(new Label("Has Cave:"), 0, 7);
+        grid.add(new Label(localeManager.getString("form.label.hasCave")), 0, 7);
         grid.add(hasCaveCheck, 1, 7);
-        grid.add(new Label("Cave Depth:"), 0, 8);
+        grid.add(new Label(localeManager.getString("form.label.caveDepth")), 0, 8);
         grid.add(depthField, 1, 8);
-        grid.add(new Label("Cave Treasures:"), 0, 9);
+        grid.add(new Label(localeManager.getString("form.label.caveTreasures")), 0, 9);
         grid.add(treasuresField, 1, 9);
 
         if (existingDragon != null) {
@@ -99,8 +99,8 @@ public class DragonFormScreen {
             typeBox.getSelectionModel().selectFirst();
         }
 
-        Button okButton = new Button("OK");
-        Button cancelButton = new Button("Cancel");
+        Button okButton = new Button(localeManager.getString("form.button.ok"));
+        Button cancelButton = new Button(localeManager.getString("form.button.cancel"));
 
         okButton.setOnAction(e -> {
             if (validateAndCreateDragon(nameField, xField, yField, ageField, colorBox, typeBox, characterBox, hasCaveCheck, depthField, treasuresField)) {
@@ -150,25 +150,25 @@ public class DragonFormScreen {
 
         grid.add(new Label("Key:"), 0, 0);
         grid.add(idField, 1, 0);
-        grid.add(new Label("Name:"), 0, 1);
+        grid.add(new Label(localeManager.getString("form.label.name")), 0, 1);
         grid.add(nameField, 1, 1);
-        grid.add(new Label("Coordinate X:"), 0, 2);
+        grid.add(new Label(localeManager.getString("form.label.cordX")), 0, 2);
         grid.add(xField, 1, 2);
-        grid.add(new Label("Coordinate Y:"), 0, 3);
+        grid.add(new Label(localeManager.getString("form.label.cordY")), 0, 3);
         grid.add(yField, 1, 3);
-        grid.add(new Label("Age:"), 0, 4);
+        grid.add(new Label(localeManager.getString("form.label.age")), 0, 4);
         grid.add(ageField, 1, 4);
-        grid.add(new Label("Color:"), 0, 5);
+        grid.add(new Label(localeManager.getString("form.label.color")), 0, 5);
         grid.add(colorBox, 1, 5);
-        grid.add(new Label("Type:"), 0, 6);
+        grid.add(new Label(localeManager.getString("form.label.type")), 0, 6);
         grid.add(typeBox, 1, 6);
-        grid.add(new Label("Character:"), 0, 7);
+        grid.add(new Label(localeManager.getString("form.label.character")), 0, 7);
         grid.add(characterBox, 1, 7);
-        grid.add(new Label("Has Cave:"), 0, 8);
+        grid.add(new Label(localeManager.getString("form.label.hasCave")), 0, 8);
         grid.add(hasCaveCheck, 1, 8);
-        grid.add(new Label("Cave Depth:"), 0, 9);
+        grid.add(new Label(localeManager.getString("form.label.caveDepth")), 0, 9);
         grid.add(depthField, 1, 9);
-        grid.add(new Label("Cave Treasures:"), 0, 10);
+        grid.add(new Label(localeManager.getString("form.label.caveTreasures")), 0, 10);
         grid.add(treasuresField, 1, 10);
 
 
@@ -176,8 +176,8 @@ public class DragonFormScreen {
         typeBox.getSelectionModel().selectFirst();
         characterBox.getSelectionModel().selectFirst();
 
-        Button okButton = new Button("OK");
-        Button cancelButton = new Button("Cancel");
+        Button okButton = new Button(localeManager.getString("form.button.ok"));
+        Button cancelButton = new Button(localeManager.getString("form.button.cancel"));
 
         okButton.setOnAction(e -> {
             if (validateAndCreateEntry(idField, nameField, xField, yField, ageField, colorBox, typeBox, characterBox, hasCaveCheck, depthField, treasuresField)) {
@@ -203,37 +203,37 @@ public class DragonFormScreen {
         try {
             String name = nameField.getText();
             if (name == null || name.trim().isEmpty()) {
-                throw new IllegalArgumentException("Name cannot be empty.");
+                throw new IllegalArgumentException(localeManager.getString("form.error.name"));
             }
 
             double x = Double.parseDouble(xField.getText().trim());
             long y = Long.parseLong(yField.getText().trim());
             if (y > 984) {
-                throw new IllegalArgumentException("Y coordinate cannot be greater than 984.");
+                throw new IllegalArgumentException(localeManager.getString("form.error.y"));
             }
             Coordinates coordinates = new Coordinates(x, y);
 
             int age = Integer.parseInt(ageField.getText().trim());
             if (age <= 0) {
-                throw new IllegalArgumentException("Age must be greater than 0.");
+                throw new IllegalArgumentException(localeManager.getString("form.error.age"));
             }
 
             Color color = colorBox.getValue();
-            if (color == null) throw new IllegalArgumentException("A color must be selected.");
+            if (color == null) throw new IllegalArgumentException(localeManager.getString("form.error.color"));
 
             DragonType type = typeBox.getValue();
-            if (type == null) throw new IllegalArgumentException("A type must be selected.");
+            if (type == null) throw new IllegalArgumentException(localeManager.getString("form.error.type"));
             DragonCharacter character = characterBox.getValue();
 
             DragonCave cave = null;
             if (hasCaveCheck.isSelected()) {
                 if (depthField.getText().trim().isEmpty() || treasuresField.getText().trim().isEmpty()) {
-                    throw new IllegalArgumentException("If a cave exists, both depth and treasures must be specified.");
+                    throw new IllegalArgumentException(localeManager.getString("form.error.cave"));
                 }
                 int depth = Integer.parseInt(depthField.getText().trim());
                 double treasures = Double.parseDouble(treasuresField.getText().trim());
                 if (treasures <= 0) {
-                    throw new IllegalArgumentException("Number of treasures must be greater than 0.");
+                    throw new IllegalArgumentException(localeManager.getString("form.error.treasures"));
                 }
                 cave = new DragonCave(depth, treasures);
             }
@@ -242,10 +242,10 @@ public class DragonFormScreen {
             return true;
 
         } catch (NumberFormatException nfe) {
-            showAlert("Invalid Input", "Please enter valid numbers for the numeric fields (X, Y, Age, Depth, Treasures).");
+            showAlert(localeManager.getString("form.error.title"), localeManager.getString("form.error.number"));
             return false;
         } catch (IllegalArgumentException iae) {
-            showAlert("Invalid Input", iae.getMessage());
+            showAlert(localeManager.getString("form.error.title"), iae.getMessage());
             return false;
         }
     }
@@ -256,42 +256,42 @@ public class DragonFormScreen {
         try {
             String id = idField.getText();
             if (id == null || id.trim().isEmpty()) {
-                throw new IllegalArgumentException("Id cannot be empty.");
+                throw new IllegalArgumentException(localeManager.getString("form.error.id"));
             }
 
             String name = nameField.getText();
             if (name == null || name.trim().isEmpty()) {
-                throw new IllegalArgumentException("Name cannot be empty.");
+                throw new IllegalArgumentException(localeManager.getString("form.error.name"));
             }
 
             double x = Double.parseDouble(xField.getText().trim());
             long y = Long.parseLong(yField.getText().trim());
             if (y > 984) {
-                throw new IllegalArgumentException("Y coordinate cannot be greater than 984.");
+                throw new IllegalArgumentException(localeManager.getString("form.error.y"));
             }
             Coordinates coordinates = new Coordinates(x, y);
 
             int age = Integer.parseInt(ageField.getText().trim());
             if (age <= 0) {
-                throw new IllegalArgumentException("Age must be greater than 0.");
+                throw new IllegalArgumentException(localeManager.getString("form.error.age"));
             }
 
             Color color = colorBox.getValue();
-            if (color == null) throw new IllegalArgumentException("A color must be selected.");
+            if (color == null) throw new IllegalArgumentException(localeManager.getString("form.error.color"));
 
             DragonType type = typeBox.getValue();
-            if (type == null) throw new IllegalArgumentException("A type must be selected.");
+            if (type == null) throw new IllegalArgumentException(localeManager.getString("form.error.type"));
             DragonCharacter character = characterBox.getValue();
 
             DragonCave cave = null;
             if (hasCaveCheck.isSelected()) {
                 if (depthField.getText().trim().isEmpty() || treasuresField.getText().trim().isEmpty()) {
-                    throw new IllegalArgumentException("If a cave exists, both depth and treasures must be specified.");
+                    throw new IllegalArgumentException(localeManager.getString("form.error.cave"));
                 }
                 int depth = Integer.parseInt(depthField.getText().trim());
                 double treasures = Double.parseDouble(treasuresField.getText().trim());
                 if (treasures <= 0) {
-                    throw new IllegalArgumentException("Number of treasures must be greater than 0.");
+                    throw new IllegalArgumentException(localeManager.getString("form.error.treasures"));
                 }
                 cave = new DragonCave(depth, treasures);
             }
@@ -300,17 +300,17 @@ public class DragonFormScreen {
             return true;
 
         } catch (NumberFormatException nfe) {
-            showAlert("Invalid Input", "Please enter valid numbers for the numeric fields (X, Y, Age, Depth, Treasures).");
+            showAlert(localeManager.getString("form.error.title"), localeManager.getString("form.error.number"));
             return false;
         } catch (IllegalArgumentException iae) {
-            showAlert("Invalid Input", iae.getMessage());
+            showAlert(localeManager.getString("form.error.title"), iae.getMessage());
             return false;
         }
     }
 
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
+        alert.titleProperty().bind(localeManager.createStringBinding(title));
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();

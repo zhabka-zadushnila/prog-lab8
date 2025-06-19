@@ -1,6 +1,7 @@
 package gui.screens;
 
 import gui.managers.AuthManager;
+import gui.managers.LocaleManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -19,10 +20,11 @@ import structs.User;
 
 public class LoginScreen {
     User returnableUser = null;
+    private final LocaleManager localeManager = LocaleManager.getInstance();
 
     public User start() {
         Stage primaryStage = new Stage();
-        primaryStage.setTitle("Dragon Collection Manager - Login");
+        primaryStage.setTitle(localeManager.getString("login.title"));
 
 
         GridPane grid = new GridPane();
@@ -32,51 +34,45 @@ public class LoginScreen {
         grid.setPadding(new Insets(25, 25, 25, 25));
 
 
-        Text scenetitle = new Text("Welcome");
+        Text scenetitle = new Text(localeManager.getString("login.welcome"));
         scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         grid.add(scenetitle, 0, 0, 2, 1);
 
 
-        Label userName = new Label("Username:");
+        Label userName = new Label(localeManager.getString("login.username"));
         grid.add(userName, 0, 1);
 
         TextField userTextField = new TextField();
         grid.add(userTextField, 1, 1);
 
-        Label pw = new Label("Password:");
+        Label pw = new Label(localeManager.getString("login.password"));
         grid.add(pw, 0, 2);
 
         PasswordField pwBox = new PasswordField();
         grid.add(pwBox, 1, 2);
 
-        // Add Login and Register buttons
-        Button loginBtn = new Button("Log in");
-        Button registerBtn = new Button("Register");
-        HBox hbBtn = new HBox(10); // A horizontal box to hold the buttons
+        Button loginBtn = new Button(localeManager.getString("login.button.login"));
+        Button registerBtn = new Button(localeManager.getString("login.button.register"));
+        HBox hbBtn = new HBox(10);
         hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
         hbBtn.getChildren().addAll(registerBtn, loginBtn);
         grid.add(hbBtn, 1, 4);
 
-        // Add a text field to display action results (e.g., "Login failed")
         final Text actiontarget = new Text();
         grid.add(actiontarget, 0, 6, 2, 1);
 
-        // --- Event Handlers for Buttons ---
 
         loginBtn.setOnAction(e -> {
             String username = userTextField.getText();
             String password = pwBox.getText();
-            System.out.println("Attempting login for user: " + username);
 
             boolean success = (new AuthManager()).login(username, password);
             if (success) {
-                actiontarget.setFill(Color.GREEN);
-                actiontarget.setText("Login successful!");
                 this.returnableUser = new User(username, password);
                 primaryStage.close();
             } else {
                 actiontarget.setFill(Color.FIREBRICK);
-                actiontarget.setText("Login failed. Please try again.");
+                actiontarget.setText(localeManager.getString("login.result.loginFailed"));
             }
         });
 
@@ -85,27 +81,21 @@ public class LoginScreen {
             String password = pwBox.getText();
 
 
-            System.out.println("Attempting to register user: " + username);
             boolean success = (new AuthManager()).register(username, password);
             if (success) {
-                actiontarget.setFill(Color.GREEN);
-                actiontarget.setText("Registration successful!");
                 this.returnableUser = new User(username, password);
                 primaryStage.close();
             } else {
                 actiontarget.setFill(Color.FIREBRICK);
-                actiontarget.setText("Registration failed. Please try again.");
+                actiontarget.setText(localeManager.getString("login.result.registrationFailed"));
             }
         });
 
-
-        // Create the scene and set it on the stage
         Scene scene = new Scene(grid, 400, 300);
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.showAndWait();
 
-        // Show the window
         return returnableUser;
     }
 }
